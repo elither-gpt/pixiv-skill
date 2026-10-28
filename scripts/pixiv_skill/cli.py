@@ -97,6 +97,10 @@ def cmd_rank(args) -> int:
             f"{'（' + {'illust': '插画', 'manga': '漫画', 'ugoira': '动图'}[content] + '）' if content else ''}"
             f" {result['date']}：第 {args.page} 页")
     lines = [head] + [line(w, i) for i, w in enumerate(works, 1)]
+    if result.get("filtered"):
+        lines.insert(1, f"（这个榜不能直接按类型分，只从本页 50 名里挑出了{'插画' if content == 'illust' else '漫画' if content == 'manga' else '动图'}）")
+    if not works:
+        lines.append("（没有结果）")
     if result["next"]:
         lines.append(f"下一页：加 --page {result['next']}")
     emit(args, {"date": result["date"], "page": args.page, "next": result["next"],

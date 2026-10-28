@@ -43,6 +43,18 @@ RANKING_MODES = {
 
 PROFILE_BATCH = 48  # the web client asks for at most 48 works per call
 
+# Rankings that reject any ``content`` filter, and the ones without an ugoira board.
+_RANK_NO_CONTENT = {"original", "daily_ai", "male", "female", "male_r18", "female_r18", "daily_r18_ai"}
+_RANK_NO_UGOIRA = {"monthly", "rookie", "r18g"}
+
+
+def ranking_content_supported(mode: str, content: str | None) -> bool:
+    if not content:
+        return True
+    if mode in _RANK_NO_CONTENT:
+        return False
+    return not (content == "ugoira" and mode in _RANK_NO_UGOIRA)
+
 
 class PixivError(Exception):
     """kind is one of: auth, not_found, network, server, rate_limit, api."""
@@ -159,8 +171,11 @@ class PixivClient:
 
     def ranking(self, mode: str = "daily", content: str | None = None,
                 page: int = 1, date: str | None = None) -> dict:
+        """Returns items plus ``filtered``: True when ``content`` was applied by
+        filtering a mixed board locally (some boards reject the filter)."""
+        server_side = ranking_content_supported(mode, content)
         params: dict = {"mode": mode, "p": page, "format": "json"}
-        if content:
+        if content and server_side:
             params["content"] = content
         if date:
             params["date"] = date
@@ -173,9 +188,14 @@ class PixivClient:
             hint = "（R-18 榜需要登录并开启 R-18 显示）" if "r18" in mode else ""
             raise PixivError(f"排行榜 {mode} 不可用：{data.get('error') or resp.status_code}{hint}",
                              "auth" if "r18" in mode else "api")
+        items = data.get("contents") or []
+        filtered = bool(content) and not server_side
+        if filtered:
+            wanted = {"illust": "0", "manga": "1", "ugoira": "2"}[content]
+            items = [i for i in items if str(i.get("illust_type")) == wanted]
         return {"date": data.get("date", ""), "next": data.get("next") or None,
                 "total": int(data.get("rank_total") or 0),
-                "items": data.get("contents") or []}
+                "items": items, "filtered": filtered}
 
     # ── artworks (illust / manga / ugoira share one API) ─────────────
 

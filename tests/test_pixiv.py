@@ -135,6 +135,19 @@ class ClientTests(unittest.TestCase):
         self.assertEqual((params["order"], params["type"]), ("popular_d", "manga"))
         self.assertEqual(len(result["items"]), 1)  # entries without id are ad slots
 
+    def test_ranking_falls_back_to_local_filter(self):
+        rows = [{"illust_id": 1, "illust_type": "0"}, {"illust_id": 2, "illust_type": "1"}]
+        c = self.client(FakeResponse(200, {"contents": rows, "date": "20260101", "next": 2}))
+        result = c.ranking("daily_ai", "manga")
+        params = c.session.get.call_args.kwargs["params"]
+        self.assertNotIn("content", params)
+        self.assertTrue(result["filtered"])
+        self.assertEqual([i["illust_id"] for i in result["items"]], [2])
+        c = self.client(FakeResponse(200, {"contents": rows}))
+        result = c.ranking("weekly", "manga")
+        self.assertEqual(c.session.get.call_args.kwargs["params"]["content"], "manga")
+        self.assertFalse(result["filtered"])
+
     def test_user_works_batches_and_keeps_order(self):
         ids = [str(i) for i in range(60, 0, -1)]
         first = {"error": False, "body": {"works": {i: {"id": i} for i in ids[:48]}}}

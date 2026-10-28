@@ -1,6 +1,6 @@
 {
   "name": "dsh-pixiv-skill",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pixiv 插画、漫画、动图、小说的搜索、排行、详情和下载技能（多页转 PDF、小说系列合并）",
   "type": "module",
   "main": "dsh/index.js",
