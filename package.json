@@ -1,0 +1,38 @@
+{
+  "name": "dsh-pixiv-skill",
+  "version": "1.0.0",
+  "description": "Pixiv 插画、漫画、动图、小说的搜索、排行、详情和下载技能（多页转 PDF、小说系列合并）",
+  "type": "module",
+  "main": "dsh/index.js",
+  "exports": {
+    ".": "./dsh/index.js",
+    "./package.json": "./package.json",
+    "./cordis.patch.yml": "./cordis.patch.yml"
+  },
+  "files": [
+    "dsh",
+    "scripts/pixiv.py",
+    "scripts/pixiv_skill/*.py",
+    "SKILL.md",
+    "docs",
+    "requirements.txt",
+    "README.md",
+    "LICENSE",
+    "cordis.patch.yml"
+  ],
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "keywords": ["deepseek-harness", "dsh", "dsh-plugin", "pixiv", "skill", "agent-skills"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elither-gpt/pixiv-skill.git"
+  },
+  "homepage": "https://github.com/elither-gpt/pixiv-skill",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  }
+}

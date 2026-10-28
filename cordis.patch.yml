@@ -1,0 +1,4 @@
+# Registers the bundled pixiv skill once dsh's skill registry is available.
+- insert:
+    - id: pixiv-skill
+      name: dsh-pixiv-skill

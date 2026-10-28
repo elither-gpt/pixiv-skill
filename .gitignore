@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.part
+*.bak*
+.env
+cookie.json
+pixiv-downloads/
+node_modules/
+*.tgz
+PROGRESS.md
